@@ -4924,6 +4924,7 @@ dependencies = [
  "sp-core",
  "sp-io",
  "sp-runtime",
+ "sp-std 14.0.0 (git+https://github.com/dhiway/substrate-sdk?branch=release-v1.10.0)",
 ]
 
 [[package]]
@@ -8372,6 +8373,11 @@ dependencies = [
 name = "sp-std"
 version = "14.0.0"
 source = "git+https://github.com/paritytech/polkadot-sdk.git?tag=polkadot-v1.9.0#3c3d6fceb82372a3019b37117aa453d564b212de"
+
+[[package]]
+name = "sp-std"
+version = "14.0.0"
+source = "git+https://github.com/dhiway/substrate-sdk?branch=release-v1.10.0#7049c3c98836b3e9253f6aaa69b6bf3d622e3962"
 
 [[package]]
 name = "sp-std"

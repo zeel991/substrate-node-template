@@ -1,0 +1,16 @@
+{
+  "main": "demo.ts",
+  "dependencies": {
+    "@polkadot/api": "^10.13.1",
+    "@polkadot/keyring": "^12.6.2",
+    "@polkadot/types": "^10.13.1"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  },
+  "scripts": {
+    "start": "ts-node demo.ts",
+    "demo": "ts-node demo.ts"  
+  }
+}

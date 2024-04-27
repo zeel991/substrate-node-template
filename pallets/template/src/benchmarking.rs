@@ -1,35 +1,56 @@
-//! Benchmarking setup for pallet-template
 #![cfg(feature = "runtime-benchmarks")]
+
 use super::*;
-
-#[allow(unused)]
-use crate::Pallet as Template;
-use frame_benchmarking::v2::*;
+use frame_benchmarking::{benchmarks, whitelisted_caller};
 use frame_system::RawOrigin;
+use sp_runtime::traits::Bounded;
+use sp_std::prelude::*;
 
-#[benchmarks]
-mod benchmarks {
-	use super::*;
+benchmarks! {
+    where_clause { where T: Config }
 
-	#[benchmark]
-	fn do_something() {
-		let value = 100u32.into();
-		let caller: T::AccountId = whitelisted_caller();
-		#[extrinsic_call]
-		do_something(RawOrigin::Signed(caller), value);
+    authorize_account {
+        let caller: T::AccountId = whitelisted_caller();
+        let new_account: T::AccountId = Bounded::max_value(); // using max value to simulate the worst-case
+    }: _(RawOrigin::Signed(caller.clone()), new_account.clone())
+    verify {
+        assert!(<Account<T>>::contains_key(new_account));
+    }
 
-		assert_eq!(Something::<T>::get(), Some(value));
-	}
+    register_statement {
+        let caller: T::AccountId = whitelisted_caller();
+        let new_account: T::AccountId = Bounded::max_value();
+    }: _(RawOrigin::Signed(caller.clone()), new_account.clone())
+    verify {
+        assert!(<Statement<T>>::contains_key(new_account));
+    }
 
-	#[benchmark]
-	fn cause_error() {
-		Something::<T>::put(100u32);
-		let caller: T::AccountId = whitelisted_caller();
-		#[extrinsic_call]
-		cause_error(RawOrigin::Signed(caller));
+    consume_statement {
+        let caller: T::AccountId = whitelisted_caller();
+        let target_account: T::AccountId = Bounded::max_value();
 
-		assert_eq!(Something::<T>::get(), Some(101u32));
-	}
+        // Insert a statement in registered status to be consumed
+        <Statement<T>>::insert(&target_account, StatementStatus::Registered);
+        // Insert the caller as an authorized account
+        <Account<T>>::insert(&caller, true);
+    }: _(RawOrigin::Signed(caller.clone()), target_account.clone())
+    verify {
+        assert_eq!(<Statement<T>>::get(target_account), Some(StatementStatus::Consumed));
+    }
+}
 
-	impl_benchmark_test_suite!(Template, crate::mock::new_test_ext(), crate::mock::Test);
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use frame_support::assert_ok;
+    use sp_io::TestExternalities;
+
+    #[test]
+    fn benchmarks_run() {
+        TestExternalities::default().execute_with(|| {
+            assert_ok!(test_benchmark_authorize_account());
+            assert_ok!(test_benchmark_register_statement());
+            assert_ok!(test_benchmark_consume_statement());
+        });
+    }
 }
