@@ -12,7 +12,7 @@ This project implements a ticket-based system using the Substrate framework. Eac
 
 ## Installation
 To install and run this project, follow these steps:
-
+```
 1. **Clone the repository:** 
    ```bash
    git clone https://github.com/zeel991/substrate-node-template.git
